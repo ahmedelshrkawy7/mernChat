@@ -7,14 +7,21 @@ const messageSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    receiverId: {
-      type: String,
-      ref: "User",
-      required: true,
-    },
     message: {
       type: String,
       required: true,
+    },
+    contractId: {
+      type: Number, // Assuming contract_id is a number
+    },
+    roomId: {
+      type: Number, // Assuming room_id is a number
+      required: true,
+    },
+    messageType: {
+      type: String,
+      enum: ["text", "image", "video"], // You can adjust the types as needed
+      default: "text",
     },
   },
   { timestamps: true }
