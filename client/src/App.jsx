@@ -12,30 +12,39 @@ const App = () => {
     const newSocket = io("http://localhost:7000"); // Replace with your server's address
     setSocket(newSocket);
     newSocket.emit("join-room", {
-      room_id: 12,
-      senderId: "11",
+      room_id: 53,
+      user_id: "11",
       receiverId: "55",
     });
+
+    fetch("http://localhost:1023/products", {
+      method: "POSt",
+    })
+      .then((res) => res.json())
+      .then((res) => console.log(res));
 
     // Clean up the connection when the component unmounts
     return () => newSocket.close();
   }, []);
 
   // Listen for messages from the server
-  // useEffect(() => {
-  //   if (socket) {
-  //     socket.on("message", (msg) => {
-  //       setMessages((prevMessages) => [...prevMessages, msg]);
-  //     });
-  //   }
-  // }, [socket]);
+  useEffect(() => {
+    console.log("first");
+
+    if (socket) {
+      socket.on("new-message", (msg) => {
+        console.log("🚀 ~ socket.on ~ msg:", msg);
+        console.log("first");
+      });
+    }
+  }, [socket]);
 
   const sendMessage = () => {
     if (socket && message) {
-      socket.emit("sendMessage", {
+      socket.emit("new-message", {
         message,
         roomId: 1,
-        senderId: "11",
+        user_id: "11",
         receiverId: "55",
       });
       setMessage(""); // Clear input after sending

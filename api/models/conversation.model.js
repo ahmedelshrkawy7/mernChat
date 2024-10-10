@@ -1,13 +1,17 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const conversatoinSchema = mongoose.Schema(
   {
-    participants: [
-      {
-        type: String,
-        ref: "User",
-      },
-    ],
+    contract_id: {
+      type: Number,
+      required: true,
+    },
+    // participants: [
+    //   {
+    //     type: String,
+    //     ref: "User",
+    //   },
+    // ],
     messages: [
       {
         type: String,
@@ -15,6 +19,10 @@ const conversatoinSchema = mongoose.Schema(
         default: [],
       },
     ],
+    // room_id: {
+    //   type: Schema.Types.ObjectId,
+    //   required: true,
+    // },
   },
   { timestamps: true }
 );

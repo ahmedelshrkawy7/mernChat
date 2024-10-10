@@ -1,48 +1,25 @@
 import Message from "../models/message.model.js";
+import getConv from "./getConv.js";
 
 import Conversation from "../models/conversation.model.js";
 import { getReceiverSocketId, io } from "../socket/socket.js";
 
+// https://plus10v2.alexondev.net/api/chat/message?contract_id=7
+
 export const sendMessage = async (req, res) => {
   try {
-    const { message } = req.body;
-    const { id: receiverId } = req.params;
-    const senderId = req.user._id;
+    const { contract_id } = req.query;
+    const x = await getConv(JSON.parse(contract_id));
+    console.log("🚀 ~ sendMessage ~ x:", x);
+    console.log("🚀 ~ sendMessage ~ contract_id:", contract_id);
 
-    let conversation = await Conversation.findOne({
-      participants: { $all: [senderId, receiverId] },
+    res.status(201).json({
+      result: "success",
+      code: 200,
+      timestamp: "2024-09-19 08:32:50",
+      message: "success",
+      data: x,
     });
-
-    if (!conversation) {
-      conversation = await Conversation.create({
-        participants: [senderId, receiverId],
-      });
-    }
-
-    const newMessage = new Message({
-      senderId,
-      receiverId,
-      message,
-    });
-
-    if (newMessage) {
-      conversation.messages.push(newMessage._id);
-    }
-
-    // await conversation.save();
-    // await newMessage.save();
-
-    // this will run in parallel
-    await Promise.all([conversation.save(), newMessage.save()]);
-
-    // SOCKET IO FUNCTIONALITY WILL GO HERE
-    const receiverSocketId = getReceiverSocketId(receiverId);
-    if (receiverSocketId) {
-      // io.to(<socket_id>).emit() used to send events to specific client
-      io.to(receiverSocketId).emit("newMessage", newMessage);
-    }
-
-    res.status(201).json(newMessage);
   } catch (error) {
     console.log("Error in sendMessage controller: ", error.message);
     res.status(500).json({ error: "Internal server error" });
